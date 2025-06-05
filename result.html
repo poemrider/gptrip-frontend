@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GPTRIP - 검색 결과</title>
-  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GPTRIP - 검색 결과</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
     tailwind.config = {
       theme: {
         extend: {
@@ -20,10 +21,10 @@
       }
     };
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
-  <style>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&amp;display=swap" rel="stylesheet"/>
+<style>
     .card-selected {
       border-bottom: 4px solid #3b82f6;
     }
@@ -34,53 +35,42 @@
   </style>
 </head>
 <body class="bg-gray-50">
-  <header class="bg-primary text-white py-4 px-6 flex justify-between items-center">
-    <a href="#" class="text-2xl font-['Pacifico']">GPTRIP</a>
-    <nav>
-      <ul class="flex space-x-6">
-        <li><a href="#" class="hover:text-gray-200">Home</a></li>
-        <li><a href="#" class="hover:text-gray-200">How to use</a></li>
-        <li><a href="#" class="hover:text-gray-200">Who we are</a></li>
-      </ul>
-    </nav>
-  </header>
+<header class="bg-primary text-white py-4 px-6 flex justify-between items-center">
+<a class="text-2xl font-['Pacifico']" href="#">GPTRIP</a>
+<nav>
+<ul class="flex space-x-6">
+<li><a class="hover:text-gray-200" href="#">Home</a></li>
+<li><a class="hover:text-gray-200" href="#">How to use</a></li>
+<li><a class="hover:text-gray-200" href="#">Who we are</a></li>
+</ul>
+</nav>
+</header>
+<main class="max-w-6xl mx-auto px-4 py-6">
 
-  <main class="max-w-6xl mx-auto px-4 py-6">
-    
-<h1 class="text-2xl font-bold mb-6">추천된 여행지</h1>
-<div class="mb-6">
-  <button onclick="location.href='insert.html'" class="bg-primary text-white px-4 py-2 rounded-button shadow hover:bg-blue-700 transition">
-    🔁 다시 입력하러 가기
-  </button>
+
+<div class="flex items-center gap-4 mb-6"><h1 class="text-2xl font-bold">추천된 여행지</h1><button class="bg-primary text-white px-4 py-2 rounded-button shadow hover:bg-blue-700 transition" onclick="location.href='insert.html'">🔁 다시 입력하러 가기</button></div><section class="bg-white shadow p-4 mb-6 rounded-md border border-gray-200">
+<h2 class="text-lg font-semibold mb-2">입력한 검색 정보</h2>
+<div class="text-sm text-gray-600">
+<p><strong>입력 이미지:</strong></p>
+<img alt="업로드한 이미지 미리보기" class="mt-2 rounded shadow-md max-w-xs" id="uploaded-image"/>
+<p class="mt-2" id="text-prompt-dynamic"></p>
 </div>
-
-
-    <section class="bg-white shadow p-4 mb-6 rounded-md border border-gray-200">
-      <h2 class="text-lg font-semibold mb-2">입력한 검색 정보</h2>
-      <div class="text-sm text-gray-600">
-        <p><strong>입력 이미지:</strong></p>
-        <img id="uploaded-image" class="mt-2 rounded shadow-md max-w-xs" alt="업로드한 이미지 미리보기" />
-        <p id="text-prompt-dynamic" class="mt-2"></p>
-      </div>
-    </section>
-
-    <div id="recommend-card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8"></div>
-
-    <section class="mb-8">
-      <h2 class="text-xl font-bold mb-4">지도에서 보기</h2>
-      <div class="flex mb-4 space-x-2">
-        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="카페">카페</button>
-        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="음식">음식</button>
-        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="관광">관광</button>
-      </div>
-      <div id="kakao-map" style="z-index:0;" class="h-96 rounded-lg mb-6"></div>
-      </div> <!-- 중복된 div 제거 -->
 </section>
-<div id="category-card-container" style="position:relative; z-index:10;" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6 mb-10"></div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8" id="recommend-card-container"></div>
+<section class="mb-8">
+<h2 class="text-xl font-bold mb-4">지도에서 보기</h2>
+<div class="flex mb-4 space-x-2">
+<button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="카페">카페</button>
+<button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="음식">음식</button>
+<button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="관광">관광</button>
+</div>
+<div class="h-96 rounded-lg mb-6" id="kakao-map" style="z-index:0;"></div>
+ <!-- 중복된 div 제거 -->
+</section>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6 mb-10" id="category-card-container" style="position:relative; z-index:10;"></div>
 </main>
-
-  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=94741a4d3bbfb347716567a7d6392c77&libraries=services"></script>
-  <script>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=94741a4d3bbfb347716567a7d6392c77&amp;libraries=services"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
       const data = JSON.parse(localStorage.getItem('recommendation_result') || '[]');
       const cardGrid = document.getElementById('recommend-card-container');
