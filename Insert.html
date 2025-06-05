@@ -183,9 +183,8 @@
                 localStorage.setItem('user_image_base64', '');
             }
 
-            if (textValue) {
-                formData.append('text', textValue);
-            }
+            // 빈 문자열이라도 항상 text를 포함하여 전송
+            formData.append('text', textValue || "");
             localStorage.setItem('user_text_prompt', textValue);
 
             fetch('https://gptrip-704668792642.asia-northeast3.run.app/recommend/search', {
