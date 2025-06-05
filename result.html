@@ -127,37 +127,44 @@
         });
       });
 
-      document.querySelectorAll(".category-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const category = btn.dataset.category;
+      
+document.querySelectorAll(".category-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const category = btn.dataset.category;
 
-          // 항상 초기화 및 표시
-          categoryCardContainer.innerHTML = '';
-          categoryCardContainer.style.display = 'grid';
+    if (!selectedPlace) {
+      alert("먼저 여행지를 선택해주세요!");
+      return;
+    }
 
-          
-if (activeCategory === category) {
-  // 중복 클릭 방지: 같은 카테고리 다시 누르면 아무 동작 안 함
-  return;
-}
+    if (activeCategory === category) {
+      // ✅ 같은 버튼 다시 누르면 토글 OFF
+      btn.classList.remove("active");
+      activeMarkers[category].forEach(marker => marker.setMap(null));
+      activeMarkers[category] = [];
+      categoryCardContainer.innerHTML = '';
+      categoryCardContainer.style.display = 'none';
+      activeCategory = null;
+      return;
+    }
 
+    // ✅ 토글 ON: 기존 것들 초기화 후 새로 표시
+    document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
 
-          document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
+    Object.keys(activeMarkers).forEach(key => {
+      activeMarkers[key].forEach(marker => marker.setMap(null));
+      activeMarkers[key] = [];
+    });
 
-          Object.keys(activeMarkers).forEach(key => {
-            activeMarkers[key].forEach(marker => marker.setMap(null));
-            activeMarkers[key] = [];
-          });
+    categoryCardContainer.innerHTML = '';
+    categoryCardContainer.style.display = 'grid';
 
-          categoryCardContainer.innerHTML = '';
+    let query = category === "카페" ? "카페" : category === "음식" ? "맛집" : "관광지";
 
-          if (!selectedPlace) return alert("먼저 여행지를 선택해주세요!");
+    const ps = new kakao.maps.services.Places();
+    ps.keywordSearch(query, (result, status) => {
 
-          let query = category === "카페" ? "카페" : category === "음식" ? "맛집" : "관광지";
-
-          const ps = new kakao.maps.services.Places();
-          ps.keywordSearch(query, (result, status) => {
             if (status !== kakao.maps.services.Status.OK) {
               alert("장소 검색 오류가 발생했습니다.");
               return;
