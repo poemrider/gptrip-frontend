@@ -160,43 +160,34 @@
         const searchInput = document.getElementById('search-input');
 
         submitBtn.addEventListener('click', function() {
-            
-        const formData = new FormData();
-        const textInput = document.getElementById('search-input');
-        const imageInput = document.getElementById('file-input');
-        localStorage.setItem('user_text_prompt', textInput.value);
-        localStorage.setItem('user_image_name', imageInput.files[0]?.name || '');
+            const imageFile = fileInput.files[0];
+            const textValue = searchInput.value.trim();
 
-        // 이미지 base64 저장
-        if (imageInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                localStorage.setItem('user_image_base64', e.target.result);
-            };
-            reader.readAsDataURL(imageInput.files[0]);
-        }
-            
-        
-
-            // 이미지 파일 추가
-            if (!fileInput || fileInput.files.length === 0) {
-                alert("이미지를 선택해주세요.");
+            if (!imageFile && !textValue) {
+                alert("이미지나 텍스트 중 하나 이상을 입력해주세요.");
                 return;
             }
-            formData.append('image', fileInput.files[0]);
 
-            // 텍스트 필드 확인
-            if (!searchInput) {
-                alert("텍스트 입력창을 찾을 수 없습니다.");
-                return;
-            }
-            if (!searchInput.value.trim()) {
-                alert("텍스트를 입력해주세요.");
-                return;
-            }
-            formData.append('text', searchInput.value);
+            const formData = new FormData();
 
-            // API 요청
+            if (imageFile) {
+                formData.append('image', imageFile);
+                localStorage.setItem('user_image_name', imageFile.name);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem('user_image_base64', e.target.result);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                localStorage.setItem('user_image_name', '');
+                localStorage.setItem('user_image_base64', '');
+            }
+
+            if (textValue) {
+                formData.append('text', textValue);
+            }
+            localStorage.setItem('user_text_prompt', textValue);
+
             fetch('https://gptrip-704668792642.asia-northeast3.run.app/recommend/search', {
                 method: 'POST',
                 body: formData
@@ -221,6 +212,6 @@
             });
         });
     });
-    </script>
+</script>
 </body>
 </html>
