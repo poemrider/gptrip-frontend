@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPTRIP - 검색 결과</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1e70c9',
+            secondary: '#4a90e2'
+          },
+          borderRadius: {
+            'button': '8px'
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+  <style>
+    .card-selected {
+      border-bottom: 4px solid #3b82f6;
+    }
+    .category-btn.active {
+      background-color: #1e70c9;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="bg-primary text-white py-4 px-6 flex justify-between items-center">
+    <a href="#" class="text-2xl font-['Pacifico']">GPTRIP</a>
+    <nav>
+      <ul class="flex space-x-6">
+        <li><a href="#" class="hover:text-gray-200">Home</a></li>
+        <li><a href="#" class="hover:text-gray-200">How to use</a></li>
+        <li><a href="#" class="hover:text-gray-200">Who we are</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <h1 class="text-2xl font-bold mb-6">추천된 여행지</h1>
+
+    <section class="bg-white shadow p-4 mb-6 rounded-md border border-gray-200">
+      <h2 class="text-lg font-semibold mb-2">입력한 검색 정보</h2>
+      <div class="text-sm text-gray-600">
+        <p><strong>입력 이미지:</strong></p>
+        <img id="uploaded-image" class="mt-2 rounded shadow-md max-w-xs" alt="업로드한 이미지 미리보기" />
+        <p id="text-prompt-dynamic" class="mt-2"></p>
+      </div>
+    </section>
+
+    <div id="recommend-card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8"></div>
+
+    <section class="mb-8">
+      <h2 class="text-xl font-bold mb-4">지도에서 보기</h2>
+      <div class="flex mb-4 space-x-2">
+        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="카페">카페</button>
+        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="음식">음식</button>
+        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="관광">관광</button>
+      </div>
+      <div id="kakao-map" style="z-index:0;" class="h-96 rounded-lg mb-6"></div>
+      </div> <!-- 중복된 div 제거 -->
+</section>
+<div id="category-card-container" style="position:relative; z-index:10;" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6 mb-10"></div>
+</main>
+
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=94741a4d3bbfb347716567a7d6392c77&libraries=services"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const data = JSON.parse(localStorage.getItem('recommendation_result') || '[]');
+      const cardGrid = document.getElementById('recommend-card-container');
+      const mapContainer = document.getElementById('kakao-map');
+      const categoryCardContainer = document.getElementById('category-card-container');
+      const activeMarkers = { 카페: [], 음식: [], 관광: [] };
+      let selectedCard = null;
+      let selectedPlace = null;
+      let activeCategory = null;
+
+      if (!Array.isArray(data) || !mapContainer) return;
+
+      const map = new kakao.maps.Map(mapContainer, {
+        center: new kakao.maps.LatLng(data[0].mapy, data[0].mapx),
+        level: 7
+      });
+
+      cardGrid.innerHTML = '';
+
+      data.forEach((place, index) => {
+        const card = document.createElement("div");
+        card.className = "bg-white rounded shadow-md overflow-hidden cursor-pointer hover:bg-blue-50 transition";
+        card.innerHTML = `
+          <div class="p-4">
+            <h3 class="font-bold text-lg mb-1">${place.title}</h3>
+            <p class="text-gray-500 text-sm mb-3 italic">${place.emotional_summary}</p>
+            <p class="text-gray-600 text-sm mb-2">주소: ${place.addr1}</p>
+            <p class="text-gray-600 text-sm mb-2">전화: ${place.tel || '정보 없음'}</p>
+          </div>`;
+
+        card.addEventListener('click', () => {
+          if (selectedCard) selectedCard.classList.remove("card-selected");
+          card.classList.add("card-selected");
+          selectedCard = card;
+          selectedPlace = place;
+          map.setCenter(new kakao.maps.LatLng(place.mapy, place.mapx));
+  // ✅ 추천 장소 클릭 시 카테고리 상태 초기화
+  Object.keys(activeMarkers).forEach(key => {
+    activeMarkers[key].forEach(marker => marker.setMap(null));
+    activeMarkers[key] = [];
+  });
+  document.querySelectorAll(".category-btn").forEach(btn => btn.classList.remove("active"));
+  categoryCardContainer.innerHTML = '';
+  activeCategory = null;
+
+        });
+
+        cardGrid.appendChild(card);
+
+        new kakao.maps.Marker({
+          map: map,
+          position: new kakao.maps.LatLng(place.mapy, place.mapx),
+          title: place.title
+        });
+      });
+
+      document.querySelectorAll(".category-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const category = btn.dataset.category;
+
+          // 항상 초기화 및 표시
+          categoryCardContainer.innerHTML = '';
+          categoryCardContainer.style.display = 'grid';
+
+          
+if (activeCategory === category) {
+  // 중복 클릭 방지: 같은 카테고리 다시 누르면 아무 동작 안 함
+  return;
+}
+
+
+          document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          Object.keys(activeMarkers).forEach(key => {
+            activeMarkers[key].forEach(marker => marker.setMap(null));
+            activeMarkers[key] = [];
+          });
+
+          categoryCardContainer.innerHTML = '';
+
+          if (!selectedPlace) return alert("먼저 여행지를 선택해주세요!");
+
+          let query = category === "카페" ? "카페" : category === "음식" ? "맛집" : "관광지";
+
+          const ps = new kakao.maps.services.Places();
+          ps.keywordSearch(query, (result, status) => {
+            if (status !== kakao.maps.services.Status.OK) {
+              alert("장소 검색 오류가 발생했습니다.");
+              return;
+            }
+
+            console.log('검색된 장소:', result);
+
+            if (!result.length) {
+              categoryCardContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">😥 주변 장소가 없습니다.</p>';
+              return;
+            }
+
+            const places = result.slice(0, 5);
+            places.forEach(place => {
+              console.log('카드 대상 장소:', place);
+              const marker = new kakao.maps.Marker({
+                map: map,
+                position: new kakao.maps.LatLng(place.y, place.x),
+                title: place.place_name
+              });
+              activeMarkers[category].push(marker);
+
+              const infowindow = new kakao.maps.InfoWindow({
+                content: `<div style="padding:5px;font-size:13px;">📍 ${place.place_name}</div>`
+              });
+
+              kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
+              kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
+
+              const card = document.createElement('div');
+              card.className = 'bg-white border rounded shadow p-4';
+              card.innerHTML = `
+                <h4 class="font-bold text-lg mb-1">📍 ${place.place_name}</h4>
+                <p class="text-sm text-gray-600 mb-1">📍 ${place.road_address_name || place.address_name}</p>
+                <p class="text-sm text-gray-500">📞 ${place.phone || '전화번호 없음'}</p>
+              `;
+              
+  // ✅ 클릭 시 지도 중심 이동 + 카드 스타일 적용
+  card.addEventListener('click', () => {
+    map.setCenter(new kakao.maps.LatLng(place.y, place.x));
+    if (selectedCard) selectedCard.classList.remove("card-selected");
+    card.classList.add("card-selected");
+    selectedCard = card;
+  });
+
+  categoryCardContainer.appendChild(card);
+              console.log('카드 추가됨:', place.place_name);
+            });
+            activeCategory = category;
+            categoryCardContainer.scrollIntoView({ behavior: 'smooth' });
+          }, {
+            location: new kakao.maps.LatLng(selectedPlace.mapy, selectedPlace.mapx),
+            radius: 1000
+          });
+            
+        });
+      });
+
+      const imgEl = document.getElementById('uploaded-image');
+      const promptEl = document.getElementById('text-prompt-dynamic');
+      const base64 = localStorage.getItem('user_image_base64');
+      const prompt = localStorage.getItem('user_text_prompt');
+
+      if (imgEl && base64) imgEl.src = base64;
+      if (promptEl && prompt) {
+        promptEl.innerHTML = "<strong>입력 프롬프트:</strong> " + prompt;
+      }
+    });
+  </script>
+</body>
+</html>
