@@ -39,9 +39,7 @@
 <a class="text-2xl font-['Pacifico']" href="#">GPTRIP</a>
 <nav>
 <ul class="flex space-x-6">
-<li><a class="hover:text-gray-200" href="#">Home</a></li>
-<li><a class="hover:text-gray-200" href="#">How to use</a></li>
-<li><a class="hover:text-gray-200" href="#">Who we are</a></li>
+
 </ul>
 </nav>
 </header>
@@ -51,7 +49,7 @@
 <div class="flex items-center gap-4 mb-6"><h1 class="text-2xl font-bold">추천된 여행지</h1><button class="bg-primary text-white px-4 py-2 rounded-button shadow hover:bg-blue-700 transition" onclick="location.href='insert.html'">🔁 다시 입력하러 가기</button></div><section class="bg-white shadow p-4 mb-6 rounded-md border border-gray-200">
 <h2 class="text-lg font-semibold mb-2">입력한 검색 정보</h2>
 <div class="text-sm text-gray-600">
-<p><strong>입력 이미지:</strong></p>
+<p><strong>이미지 입력:</strong></p>
 <img alt="업로드한 이미지 미리보기" class="mt-2 rounded shadow-md max-w-xs" id="uploaded-image"/>
 <p class="mt-2" id="text-prompt-dynamic"></p>
 </div>
@@ -230,7 +228,7 @@ document.querySelectorAll(".category-btn").forEach(btn => {
 
       if (imgEl && base64) imgEl.src = base64;
       if (promptEl && prompt) {
-        promptEl.innerHTML = "<strong>입력 프롬프트:</strong> " + prompt;
+        promptEl.innerHTML = "<strong>텍스트 입력:</strong> " + prompt;
       }
     });
   </script>
