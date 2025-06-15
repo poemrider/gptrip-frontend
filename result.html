@@ -57,7 +57,9 @@
 </div>
 </section>
 <h2 class="text-xl font-semibold mt-8 mb-4">추천된 여행지</h2>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8" id="recommend-card-container"></div>
+<div id="recommend-card-container" 
+     class="flex overflow-x-auto scroll-smooth snap-x space-x-4 px-4 py-4 mb-8"
+     style="scroll-snap-type: x mandatory;"></div>
 <section class="mb-8">
 <h2 class="text-xl font-bold mb-4">지도에서 보기</h2>
 <div class="flex mb-4 space-x-2">
@@ -69,7 +71,6 @@
 <!-- 중복된 div 제거 -->
 </section>
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6 mb-10" id="category-card-container" style="position:relative; z-index:10;"></div>
-<div class="mb-24"></div>
 <div class="mb-24"></div>
 </main>
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=94741a4d3bbfb347716567a7d6392c77&amp;libraries=services"></script>
@@ -95,7 +96,7 @@
 
       data.forEach((place, index) => {
         const card = document.createElement("div");
-        card.className = "bg-white rounded shadow-md overflow-hidden cursor-pointer hover:bg-blue-50 transition";
+        card.className = "flex-shrink-0 w-80 snap-center bg-white rounded shadow-md overflow-hidden cursor-pointer hover:bg-blue-50 transition";
         card.innerHTML = `
           <div class="p-4">
             <h3 class="font-bold text-lg mb-1">${place.title}</h3>
