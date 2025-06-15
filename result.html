@@ -32,22 +32,75 @@
       background-color: #1e70c9;
       color: white;
     }
-  </style>
+  
+  .category-scroll {
+    display: flex !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .category-slide-card {
+    flex: 0 0 auto;
+    width: 250px;
+    scroll-snap-align: start;
+  }
+
+</style>
+
+<style>
+  .scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .scroll-container::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .scroll-container::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+
+  .slide-card {
+    flex: 0 0 auto;
+    width: 250px;
+    scroll-snap-align: start;
+  }
+
+  .category-scroll {
+    display: flex !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .category-slide-card {
+    flex: 0 0 auto;
+    width: 250px;
+    scroll-snap-align: start;
+  }
+
+</style>
 </head>
 <body class="bg-gray-50">
+<header class="bg-primary text-white py-4 px-6 flex justify-between items-center">
+<a class="text-2xl font-['Pacifico']" href="#">GPTRIP</a>
+<nav>
+<ul class="flex space-x-6">
 
-<!-- 네비게이션 바 -->
-<header class="bg-primary text-white w-full py-4 px-6">
-  <div class="container mx-auto flex justify-between items-center">
-    <a class="text-2xl font-['Pacifico'] text-white" href="#">GPTRIP</a>
-    <nav>
-      <ul class="flex space-x-8">
-      </ul>
-    </nav>
-  </div>
+</ul>
+</nav>
 </header>
+<main class="max-w-6xl mx-auto px-4 py-6">
 
-<main class="container mx-auto px-4 py-8 max-w-5xl">
+
 <div class="flex items-center gap-4 mb-6"><h1 class="text-2xl font-bold">추천된 여행지</h1><button class="bg-primary text-white px-4 py-2 rounded-button shadow hover:bg-blue-700 transition" onclick="location.href='insert.html'">🔁 다시 입력하러 가기</button></div><section class="bg-white shadow p-4 mb-6 rounded-md border border-gray-200">
 <h2 class="text-lg font-semibold mb-2">입력한 검색 정보</h2>
 <div class="text-sm text-gray-600">
@@ -56,10 +109,7 @@
 <p class="mt-2" id="text-prompt-dynamic"></p>
 </div>
 </section>
-<h2 class="text-xl font-semibold mt-8 mb-4">추천된 여행지</h2>
-<div id="recommend-card-container" 
-     class="flex overflow-x-auto scroll-smooth snap-x space-x-4 px-4 py-4 mb-8"
-     style="scroll-snap-type: x mandatory;"></div>
+<div class="scroll-container mb-8" id="recommend-card-container"></div>
 <section class="mb-8">
 <h2 class="text-xl font-bold mb-4">지도에서 보기</h2>
 <div class="flex mb-4 space-x-2">
@@ -68,12 +118,9 @@
 <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-button category-btn" data-category="관광">관광</button>
 </div>
 <div class="h-96 rounded-lg mb-6" id="kakao-map" style="z-index:0;"></div>
-<!-- 중복된 div 제거 -->
+ <!-- 중복된 div 제거 -->
 </section>
-<div id="category-card-container" class="flex overflow-x-auto snap-x scroll-smooth space-x-4 px-4 py-4" style="scroll-snap-type: x mandatory;" 
-     class="flex overflow-x-auto snap-x scroll-smooth space-x-4 mt-6 mb-10 px-4 py-4" style="scroll-snap-type: x mandatory;"
-     style="scroll-snap-type: x mandatory; position:relative; z-index:10;"></div>
-<div class="mb-24"></div>
+<div class="category-scroll mb-10" id="category-card-container" style="position:relative; z-index:10;"></div>
 </main>
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=94741a4d3bbfb347716567a7d6392c77&amp;libraries=services"></script>
 <script>
@@ -98,62 +145,27 @@
 
       data.forEach((place, index) => {
         const card = document.createElement("div");
-        card.className = "flex-shrink-0 w-72 snap-center bg-white border-l-4 border-primary p-4 shadow";
+        card.className = "slide-card bg-white rounded shadow-md overflow-hidden cursor-pointer hover:bg-blue-50 transition";
         card.innerHTML = `
+          <img src="${place.image || 'https://via.placeholder.com/250x150?text=No+Image'}" alt="${place.title}" class="w-full h-40 object-cover">
           <div class="p-4">
             <h3 class="font-bold text-lg mb-1">${place.title}</h3>
             <p class="text-gray-500 text-sm mb-3 italic">${place.emotional_summary}</p>
             <p class="text-gray-600 text-sm mb-2">주소: ${place.addr1}</p>
-            
-<p class="text-gray-600 text-sm mb-2">전화: ${place.tel || '정보 없음'}</p>
-<img src="${place.image || '58ff5b9e-0738-4299-877c-bd8261ce0c18.png'}" alt="${place.title}" class="mt-2 rounded-md max-h-48 object-cover w-full"/>
-
+            <p class="text-gray-600 text-sm mb-2">전화: ${place.tel || '정보 없음'}</p>
           </div>`;
 
-        
-
-let clickCount = 0;
-
-card.addEventListener('click', () => {
-  clickCount++;
-  setTimeout(() => {
-    if (clickCount === 1) {
-      if (selectedCard) selectedCard.classList.remove("card-selected");
-      card.classList.add("card-selected");
-      selectedCard = card;
-      selectedPlace = place;
-      map.setCenter(new kakao.maps.LatLng(place.mapy || place.y, place.mapx || place.x));
-    } else if (clickCount === 2) {
-      const url = `https://map.kakao.com/link/search/${encodeURIComponent(place.title || place.place_name)}`;
-      window.open(url, '_blank');
-    }
-    clickCount = 0;
-  }, 300);
-
-  if (clickTimeout) {
-    clearTimeout(clickTimeout);
-    clickTimeout = null;
-    const url = `https://map.kakao.com/link/search/${encodeURIComponent(place.title || place.place_name)}`;
-    window.open(url, '_blank');
-  } else {
-    clickTimeout = setTimeout(() => {
-      if (selectedCard) selectedCard.classList.remove("card-selected");
-      card.classList.add("card-selected");
-      selectedCard = card;
-      selectedPlace = place;
-      map.setCenter(new kakao.maps.LatLng(place.mapy || place.y, place.mapx || place.x));
-      clickTimeout = null;
-    }, 300);
-  }
-
-  const url = `https://map.kakao.com/link/search/${encodeURIComponent(place.place_name)}`;
-  window.open(url, '_blank');
-
+        card.addEventListener('click', () => {
           if (selectedCard) selectedCard.classList.remove("card-selected");
           card.classList.add("card-selected");
           selectedCard = card;
           selectedPlace = place;
           map.setCenter(new kakao.maps.LatLng(place.mapy, place.mapx));
+        card.addEventListener('dblclick', () => {
+          const kakaoUrl = `https://map.kakao.com/link/map/${encodeURIComponent(place.title)},${place.mapy},${place.mapx}`;
+          window.open(kakaoUrl, '_blank');
+        });
+
   // ✅ 추천 장소 클릭 시 카테고리 상태 초기화
   Object.keys(activeMarkers).forEach(key => {
     activeMarkers[key].forEach(marker => marker.setMap(null));
@@ -205,7 +217,7 @@ document.querySelectorAll(".category-btn").forEach(btn => {
     });
 
     categoryCardContainer.innerHTML = '';
-    categoryCardContainer.style.display = 'flex';
+    categoryCardContainer.style.display = 'grid';
 
     let query = category === "카페" ? "카페" : category === "음식" ? "맛집" : "관광지";
 
@@ -242,58 +254,26 @@ document.querySelectorAll(".category-btn").forEach(btn => {
               kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
 
               const card = document.createElement('div');
-              card.className = "flex-shrink-0 w-72 snap-center bg-white border-l-4 border-primary p-4 shadow";
+              card.className = 'category-slide-card bg-white border rounded shadow p-4';
               card.innerHTML = `
-                <div class="text-xs text-primary font-semibold mb-1">[주변 장소]</div><h4 class="font-bold text-lg mb-1">📍 ${place.place_name}</h4>
+                <h4 class="font-bold text-lg mb-1">📍 ${place.place_name}</h4>
                 <p class="text-sm text-gray-600 mb-1">📍 ${place.road_address_name || place.address_name}</p>
                 <p class="text-sm text-gray-500">📞 ${place.phone || '전화번호 없음'}</p>
               `;
               
   // ✅ 클릭 시 지도 중심 이동 + 카드 스타일 적용
-  
-
-let clickCount = 0;
-
-card.addEventListener('click', () => {
-  clickCount++;
-  setTimeout(() => {
-    if (clickCount === 1) {
-      if (selectedCard) selectedCard.classList.remove("card-selected");
-      card.classList.add("card-selected");
-      selectedCard = card;
-      selectedPlace = place;
-      map.setCenter(new kakao.maps.LatLng(place.mapy || place.y, place.mapx || place.x));
-    } else if (clickCount === 2) {
-      const url = `https://map.kakao.com/link/search/${encodeURIComponent(place.title || place.place_name)}`;
-      window.open(url, '_blank');
-    }
-    clickCount = 0;
-  }, 300);
-
-  if (clickTimeout) {
-    clearTimeout(clickTimeout);
-    clickTimeout = null;
-    const url = `https://map.kakao.com/link/search/${encodeURIComponent(place.title || place.place_name)}`;
-    window.open(url, '_blank');
-  } else {
-    clickTimeout = setTimeout(() => {
-      if (selectedCard) selectedCard.classList.remove("card-selected");
-      card.classList.add("card-selected");
-      selectedCard = card;
-      selectedPlace = place;
-      map.setCenter(new kakao.maps.LatLng(place.mapy || place.y, place.mapx || place.x));
-      clickTimeout = null;
-    }, 300);
-  }
-
-  const url = `https://map.kakao.com/link/search/${encodeURIComponent(place.place_name)}`;
-  window.open(url, '_blank');
-
+  card.addEventListener('click', () => {
     map.setCenter(new kakao.maps.LatLng(place.y, place.x));
     if (selectedCard) selectedCard.classList.remove("card-selected");
     card.classList.add("card-selected");
     selectedCard = card;
   });
+
+  card.addEventListener('dblclick', () => {
+    const kakaoUrl = `https://map.kakao.com/link/map/${encodeURIComponent(place.place_name)},${place.y},${place.x}`;
+    window.open(kakaoUrl, '_blank');
+  });
+
 
   categoryCardContainer.appendChild(card);
               console.log('카드 추가됨:', place.place_name);
@@ -319,7 +299,7 @@ card.addEventListener('click', () => {
       }
     });
   </script>
-<footer class="bg-gray-100 text-center py-3 text-sm text-gray-600 shadow"
+  <footer class="bg-gray-100 text-center py-3 text-sm text-gray-600 shadow"
         style="">
   문의 사항이 있으시다면 
   <a href="mailto:pino017234@gmail.com" class="text-primary underline">
