@@ -206,7 +206,7 @@ async function fetchPlaceDetailUrl(query) {
             <p class="text-gray-500 text-sm mb-3 italic">${place.emotional_summary}</p>
             <p class="text-gray-600 text-sm mb-2">주소: ${place.addr1}</p>
             <p class="text-gray-600 text-sm mb-2">전화: ${place.tel || '정보 없음'}</p>
-            <p class="text-xs text-gray-400 italic mt-2">※더블클릭 시 카카오맵으로 이동</p>
+            <p class="text-xs text-gray-400 italic mt-2">※ 더블탭/더블클릭 시 카카오맵으로 이동</p>
           </div>`;
 
         card.addEventListener('click', () => {
@@ -215,8 +215,13 @@ async function fetchPlaceDetailUrl(query) {
           selectedCard = card;
           selectedPlace = place;
           map.setCenter(new kakao.maps.LatLng(place.mapy, place.mapx));
-        card.addEventListener('dblclick', () => {
-          window.open(place.place_url, '_blank');
+        card.addEventListener('dblclick', async () => {
+          const url = await fetchPlaceDetailUrl(place.title);
+          if (url) {
+            window.open(url, '_blank');
+          } else {
+            alert('장소 정보를 찾을 수 없습니다.');
+          }
         });
 
   // ✅ 추천 장소 클릭 시 카테고리 상태 초기화
@@ -318,7 +323,7 @@ document.querySelectorAll(".category-btn").forEach(btn => {
                 <h4 class="font-bold text-lg mb-1">📍 ${place.place_name}</h4>
                 <p class="text-sm text-gray-600 mb-1">📍 ${place.road_address_name || place.address_name}</p>
                 <p class="text-sm text-gray-500">📞 ${place.phone || '전화번호 없음'}</p>
-                <p class="text-xs text-gray-400 italic mt-2">※더블클릭 시 카카오맵으로 이동</p>              `;
+                <p class="text-xs text-gray-400 italic mt-2">※ 더블탭/더블클릭 시 카카오맵으로 이동</p>              `;
               
   // ✅ 클릭 시 지도 중심 이동 + 카드 스타일 적용
   card.addEventListener('click', () => {
