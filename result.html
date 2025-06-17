@@ -438,5 +438,38 @@ async function fetchPlaceDetailUrl(query) {
 
 </script>
 
+
+<script>
+  const categoryScrollContainer = document.getElementById('category-card-container');
+  let isDragging = false;
+  let startXCategory;
+  let scrollLeftCategory;
+
+  categoryScrollContainer.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    categoryScrollContainer.classList.add('cursor-grabbing');
+    startXCategory = e.pageX - categoryScrollContainer.offsetLeft;
+    scrollLeftCategory = categoryScrollContainer.scrollLeft;
+  });
+
+  categoryScrollContainer.addEventListener('mouseleave', () => {
+    isDragging = false;
+    categoryScrollContainer.classList.remove('cursor-grabbing');
+  });
+
+  categoryScrollContainer.addEventListener('mouseup', () => {
+    isDragging = false;
+    categoryScrollContainer.classList.remove('cursor-grabbing');
+  });
+
+  categoryScrollContainer.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - categoryScrollContainer.offsetLeft;
+    const walk = (x - startXCategory) * 1.5;
+    categoryScrollContainer.scrollLeft = scrollLeftCategory - walk;
+  });
+</script>
+
 </body>
 </html>
