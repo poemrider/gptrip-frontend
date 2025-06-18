@@ -278,8 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (base64) {
       imgEl.src = base64;
     } else {
-      imgEl.src = "images/none_image.png";
-      imgEl.alt = "이미지 없음";
+      imgEl.style.display = "none";
     }
   }
   if (promptEl && prompt) {
