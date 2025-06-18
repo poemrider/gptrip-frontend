@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (place.image && place.image.startsWith('http')) {
       imageHTML = `<img src="${place.image}" alt="${place.title}" class="w-full h-40 min-h-[150px] object-cover bg-gray-100">`;
     } else {
-      imageHTML = `<img src="images/none_image.png" alt="이미지 없음" class="w-full h-40 min-h-[150px] object-cover bg-gray-100">`;
+      imageHTML = `<div class="w-full h-40 min-h-[150px] bg-gray-100"></div>`;
     }
     card.innerHTML = `
       ${imageHTML}
