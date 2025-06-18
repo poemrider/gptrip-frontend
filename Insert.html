@@ -149,6 +149,7 @@
             }
         });
     </script>
+
 <script id="form-submission-handler">
     document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = document.getElementById('submit-btn');
@@ -165,23 +166,27 @@
             }
 
             const formData = new FormData();
+            localStorage.setItem('user_text_prompt', textValue || "");
 
             if (imageFile) {
                 formData.append('image', imageFile);
                 localStorage.setItem('user_image_name', imageFile.name);
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     localStorage.setItem('user_image_base64', e.target.result);
+                    sendRequest(formData, textValue);
                 };
                 reader.readAsDataURL(imageFile);
             } else {
                 localStorage.setItem('user_image_name', '');
                 localStorage.setItem('user_image_base64', '');
+                sendRequest(formData, textValue);
             }
+        });
 
-            // 빈 문자열이라도 항상 text를 포함하여 전송
+        function sendRequest(formData, textValue) {
             formData.append('text', textValue || "");
-            localStorage.setItem('user_text_prompt', textValue);
 
             fetch('https://gptrip-704668792642.asia-northeast3.run.app/recommend/search', {
                 method: 'POST',
@@ -205,9 +210,10 @@
                 console.error('API 요청 실패:', error);
                 alert(`Error: ${error.message}`);
             });
-        });
+        }
     });
 </script>
+
 <footer class="mt-4 bg-gray-100 text-center py-3 text-sm text-gray-600 shadow"
         >
   문의 사항이 있으시다면 
